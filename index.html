@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>eBook Haven</title>
+  <style>
+    :root {
+      --color-bg-light: #f7f9fc;
+      --color-text-light: #222;
+      --color-card-bg-light: white;
+      --color-primary: #6200ea;
+
+      --color-bg-dark: #121212;
+      --color-text-dark: #eee;
+      --color-card-bg-dark: #1e1e1e;
+      --color-primary-dark: #bb86fc;
+    }
+
+    /* Base Styles */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--color-bg-light);
+      color: var(--color-text-light);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    header {
+      background-color: var(--color-primary);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      user-select: none;
+    }
+
+    /* Dark mode header */
+    body.dark header {
+      background-color: var(--color-primary-dark);
+    }
+
+    /* Dark mode background and text */
+    body.dark {
+      background-color: var(--color-bg-dark);
+      color: var(--color-text-dark);
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+      transition: color 0.3s ease;
+    }
+
+    .book-card {
+      background-color: var(--color-card-bg-light);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Dark mode cards */
+    body.dark .book-card {
+      background-color: var(--color-card-bg-dark);
+      box-shadow: 0 2px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .book-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .book-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .book-info {
+      padding: 1rem;
+      flex-grow: 1;
+    }
+
+    .book-info h3 {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .book-info p {
+      font-size: 0.9rem;
+      color: #555;
+      margin: 0.3rem 0 0 0;
+    }
+
+    /* Dark mode text inside cards */
+    body.dark .book-info p {
+      color: #bbb;
+    }
+
+    /* Controls container */
+    .controls {
+      max-width: 1200px;
+      margin: 1rem auto 0;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex-grow: 1;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--color-primary);
+    }
+
+    body.dark .search-input {
+      background-color: #333;
+      color: #eee;
+      border-color: #555;
+    }
+
+    body.dark .search-input:focus {
+      border-color: var(--color-primary-dark);
+    }
+
+    .toggle-btn {
+      background-color: transparent;
+      border: 2px solid white;
+      color: white;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+
+    .toggle-btn:hover {
+      background-color: white;
+      color: var(--color-primary);
+    }
+
+    body.dark .toggle-btn {
+      border-color: var(--color-primary-dark);
+      color: var(--color-primary-dark);
+    }
+
+    body.dark .toggle-btn:hover {
+      background-color: var(--color-primary-dark);
+      color: white;
+    }
+
+    @media (max-width: 500px) {
+      header {
+        font-size: 1.3rem;
+      }
+      .controls {
+        padding: 0 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>📚 eBook Haven</div>
+    <button class="toggle-btn" id="darkToggle">Dark Mode</button>
+  </header>
+
+  <div class="controls">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search books by title or author..."/>
+  </div>
+
+  <div class="container" id="book-list">
+    <!-- Books will be inserted here -->
+  </div>
+
+  <script>
+    const books = [
+      {
+        title: "Atomic Habits",
+        author: "James Clear",
+        image: "https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg",
+        link: "https://jamesclear.com/atomic-habits"
+      },
+      {
+        title: "Deep Work",
+        author: "Cal Newport",
+        image: "https://m.media-amazon.com/images/I/71din4TLubL._UF1000,1000_QL80_.jpg",
+        link: "https://www.calnewport.com/books/deep-work/"
+      },
+      {
+        title: "The Psychology of Money",
+        author: "Morgan Housel",
+        image: "https://images-na.ssl-images-amazon.com/images/I/71g2ednj0JL.jpg",
+        link: "https://www.goodreads.com/book/show/41881472-the-psychology-of-money"
+      },
+      {
+        title: "Rich Dad Poor Dad",
+        author: "Robert T. Kiyosaki",
+        image: "https://images-na.ssl-images-amazon.com/images/I/81bsw6fnUiL.jpg",
+        link: "https://www.richdad.com/products/rich-dad-poor-dad"
+      },
+      {
+        title: "Clean Code",
+        author: "Robert C. Martin",
+        image: "https://images-na.ssl-images-amazon.com/images/I/41SH-SvWPxL._SX374_BO1,204,203,200_.jpg",
+        link: "https://www.goodreads.com/book/show/3735293-clean-code"
+      },
+      {
+        title: "Can't Hurt Me",
+        author: "David Goggins",
+        image: "https://images-na.ssl-images-amazon.com/images/I/71fwbMm1NBL.jpg",
+        link: "https://davidgoggins.com/book/"
+      },
+      {
+        title: "The Subtle Art of Not Giving a F*ck",
+        author: "Mark Manson",
+        image: "https://beyondhampers.com/cdn/shop/files/TheSubtleArtofNotGivingAF_ck.jpg?v=1722951586",
+        link: "https://markmanson.net/books/subtle-art"
+      },
+      {
+        title: "Sapiens: A Brief History of Humankind",
+        author: "Yuval Noah Harari",
+        image: "https://images.squarespace-cdn.com/content/v1/5ec987dde221bb54c0a9a009/1656612501749-9JP2U9W7WBZKY0SWCQ4H/Sapiens_Medium+copy.png",
+        link: "https://www.ynharari.com/book/sapiens-2/"
+      },
+      {
+        title: "The Lean Startup",
+        author: "Eric Ries",
+        image: "https://bayinternationalschool.com/wp-content/uploads/2021/10/product7.jpg",
+        link: "https://leanstartup.co/"
+      },
+      {
+        title: "The 7 Habits of Highly Effective People",
+        author: "Stephen R. Covey",
+        image: "https://images-na.ssl-images-amazon.com/images/I/81OthjkJBuL.jpg",
+        link: "https://www.franklincovey.com/the-7-habits/"
+      }
+    ];
+
+    const container = document.getElementById('book-list');
+    const searchInput = document.getElementById('searchInput');
+    const darkToggle = document.getElementById('darkToggle');
+
+    // Render books function
+    function renderBooks(list) {
+      container.innerHTML = '';
+      if (list.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; font-size:1.2rem; color:gray;">No books found.</p>';
+        return;
+      }
+      list.forEach(book => {
+        const card = document.createElement('a');
+        card.href = book.link;
+        card.target = "_blank";
+        card.className = "book-card";
+        card.innerHTML = `
+          <img src="${book.image}" alt="${book.title}" />
+          <div class="book-info">
+            <h3>${book.title}</h3>
+            <p>by ${book.author}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Initial render
+    renderBooks(books);
+
+    // Search filter
+    searchInput.addEventListener('input', e => {
+      const query = e.target.value.toLowerCase();
+      const filteredBooks = books.filter(book =>
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query)
+      );
+      renderBooks(filteredBooks);
+    });
+
+    // Dark mode toggle
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      if(document.body.classList.contains('dark')) {
+        darkToggle.textContent = 'Light Mode';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        darkToggle.textContent = 'Dark Mode';
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    // Load theme from localStorage
+    window.onload = () => {
+      const theme = localStorage.getItem('theme');
+      if(theme === 'dark') {
+        document.body.classList.add('dark');
+        darkToggle.textContent = 'Light Mode';
+      }
+    }
+  </script>
+
+</body>
+</html>
